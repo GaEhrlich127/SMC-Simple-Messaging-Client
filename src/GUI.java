@@ -19,6 +19,7 @@ public class GUI extends JPanel {
 	/*
 	 * Create the panel.
 	 */
+	private JTextArea textArea;
 	public GUI(String name) {
 		
 		
@@ -28,7 +29,7 @@ public class GUI extends JPanel {
 		scrollPane.setBounds(22, 13, 766, 499);
 		add(scrollPane);
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setFont(new Font("Monospaced", Font.PLAIN, 18));
 		scrollPane.setViewportView(textArea);
 		textArea.setEditable(false);
@@ -40,7 +41,7 @@ public class GUI extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				//Submit pressed
 				String msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
-				textArea.setText(textArea.getText()+msg);
+				textArea.append(msg);
 				messageField.setText("");
 			}
 		});
@@ -63,5 +64,9 @@ public class GUI extends JPanel {
 		messageField.setColumns(10);
 		
 	}
+	public void addText(String msg) {
+		textArea.append(msg);
+	}
+	
 	
 }
