@@ -18,11 +18,18 @@ public class GUI extends JPanel {
 
 	/*
 	 * Create the panel.
+	 * 
+	 * Creates this such that the Component array from gui.getComponents() is as follows
+	 * 0: scrollPane
+	 * 1: submitButton (feat. mouseClicked)
+	 * 2: messageField (feat. actionPerformed)
 	 */
 	private JTextArea textArea;
-	public GUI(String name) {
-		
-		
+	private String msg;
+	private String name;
+	public GUI(String n) {
+		name=n;
+		msg="";
 		setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -40,7 +47,7 @@ public class GUI extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				//Submit pressed
-				String msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
+				msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
 				textArea.append(msg);
 				messageField.setText("");
 			}
@@ -52,8 +59,8 @@ public class GUI extends JPanel {
 		messageField.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
-				textArea.setText(textArea.getText()+msg);
+				msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
+				textArea.append(msg);
 				messageField.setText("");
 				//This is identical to pressing the submit button.
 			}
@@ -66,6 +73,9 @@ public class GUI extends JPanel {
 	}
 	public void addText(String msg) {
 		textArea.append(msg);
+	}
+	public String getMSG() {
+		return msg;
 	}
 	
 	
