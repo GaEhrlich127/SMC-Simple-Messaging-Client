@@ -1,5 +1,10 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.net.*;
+import java.time.LocalTime;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -9,14 +14,16 @@ import javax.swing.WindowConstants;
  * SMC: Simple Messaging Client
  * Written by Gabe Ehrlich
  */
-public class ChatClient {
+public class ChatClient extends Thread {
 
-	private static GUI gui;
-	
+	static GUI gui;
+	static DataOutputStream out;
+	static DataInputStream in;
+
 	public static void main(String[] args){
 		ChatClient cc=new ChatClient();
 	}
-	
+
 	public ChatClient() {
 		String IP=JOptionPane.showInputDialog("Enter the IP address of the server you'd like to connect to");
 		int port=3509;
@@ -25,22 +32,25 @@ public class ChatClient {
 			guiSetup();
 			gui.addText("Connected to "+sock.getRemoteSocketAddress());
 			OutputStream outToServer = sock.getOutputStream();
-	        DataOutputStream out = new DataOutputStream(outToServer);
-	         InputStream inFromServer = sock.getInputStream();
-	         DataInputStream in = new DataInputStream(inFromServer);
-	         
-//	         System.out.println("Server says " + in.readUTF());
-	         gui.addText(in.readUTF());
+			out = new DataOutputStream(outToServer);
+			InputStream inFromServer = sock.getInputStream();
+			in = new DataInputStream(inFromServer);
+
+			//	         System.out.println("Server says " + in.readUTF());
+			gui.addText(in.readUTF());
 			sock.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void guiSetup() {
 		String username=JOptionPane.showInputDialog("Please enter your username");
 		gui=new GUI(username);
 		JFrame frame=new JFrame();
+
+		addGUIButtons(username);
+
 		frame.getContentPane().add(gui);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setTitle("SMC Client: "+username);
@@ -48,5 +58,38 @@ public class ChatClient {
 		frame.setVisible(true);
 	}
 	
+	private static void addGUIButtons(String username) {//This will add the functionality to hitting enter and/or the button
+		gui.getMessageField().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				gui.setMSG("\n["+LocalTime.now()+"] "+username+": "+gui.getMessageField().getText());
+				gui.addText(gui.getMSG());
+				gui.getMessageField().setText("");
+				try {
+					out.writeUTF(gui.getMSG());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		gui.getSubmitButton().addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				//Submit pressed
+				gui.setMSG("\n["+LocalTime.now()+"] "+username+": "+gui.getMessageField().getText());
+				gui.addText(gui.getMSG());
+				gui.getMessageField().setText("");
+				try {
+					out.writeUTF(gui.getMSG());
+				} catch (IOException err) {
+					// TODO Auto-generated catch block
+					err.printStackTrace();
+				}
+			}
+		});
+	}
+
 
 }

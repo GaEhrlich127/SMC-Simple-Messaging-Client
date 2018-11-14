@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
  * Written by Gabe Ehrlich
  */
 public class GUI extends JPanel {
-	private JTextField messageField;
+	
 
 	/*
 	 * Create the panel.
@@ -27,6 +27,9 @@ public class GUI extends JPanel {
 	private JTextArea textArea;
 	private String msg;
 	private String name;
+	private JTextField messageField;
+	private JButton submitButton;
+	
 	public GUI(String n) {
 		name=n;
 		msg="";
@@ -41,8 +44,8 @@ public class GUI extends JPanel {
 		scrollPane.setViewportView(textArea);
 		textArea.setEditable(false);
 		
-		JButton submitButton = new JButton("Submit");
-		submitButton.addMouseListener(new MouseAdapter() {
+		submitButton = new JButton("Submit");
+/*		submitButton.addMouseListener(new MouseAdapter() {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -51,12 +54,12 @@ public class GUI extends JPanel {
 				textArea.append(msg);
 				messageField.setText("");
 			}
-		});
+		});*/
 		submitButton.setBounds(649, 529, 139, 55);
 		add(submitButton);
 		
 		messageField = new JTextField();
-		messageField.addActionListener(new ActionListener() {
+/*		messageField.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
@@ -64,18 +67,27 @@ public class GUI extends JPanel {
 				messageField.setText("");
 				//This is identical to pressing the submit button.
 			}
-		});
+		});*/
 		
 		messageField.setBounds(22, 529, 615, 55);
 		add(messageField);
 		messageField.setColumns(10);
 		
 	}
+	public JButton getSubmitButton() {
+		return submitButton;
+	}
+	public JTextField getMessageField() {
+		return messageField;
+	}
 	public void addText(String msg) {
 		textArea.append(msg);
 	}
 	public String getMSG() {
 		return msg;
+	}
+	public void setMSG(String str) {
+		msg=str;
 	}
 	
 	
