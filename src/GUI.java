@@ -45,29 +45,12 @@ public class GUI extends JPanel {
 		textArea.setEditable(false);
 		
 		submitButton = new JButton("Submit");
-/*		submitButton.addMouseListener(new MouseAdapter() {
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				//Submit pressed
-				msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
-				textArea.append(msg);
-				messageField.setText("");
-			}
-		});*/
+//This button gains it's functionality within ChatClient and ChatServer, in order to make it work with networking
 		submitButton.setBounds(649, 529, 139, 55);
 		add(submitButton);
 		
 		messageField = new JTextField();
-/*		messageField.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				msg="\n["+LocalTime.now()+"] "+name+": "+messageField.getText();
-				textArea.append(msg);
-				messageField.setText("");
-				//This is identical to pressing the submit button.
-			}
-		});*/
+//The ability to send messages by pressing enter is given in ChatClient and ChatServer, in order to make it work with networking
 		
 		messageField.setBounds(22, 529, 615, 55);
 		add(messageField);
