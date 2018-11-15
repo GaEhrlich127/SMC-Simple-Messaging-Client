@@ -19,18 +19,23 @@ public class ChatClient extends Thread {
 	static GUI gui;
 	static DataOutputStream out;
 	static DataInputStream in;
+	static Socket sock;
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws UnknownHostException, IOException{
 		ChatClient cc=new ChatClient();
+		cc.run();
 	}
 
-	public ChatClient() {
+	public ChatClient() throws UnknownHostException, IOException {
 		String IP=JOptionPane.showInputDialog("Enter the IP address of the server you'd like to connect to");
 		int port=3509;
+		sock = new Socket(InetAddress.getByName(IP), port);
+		guiSetup();
+		gui.addText("Connected to "+sock.getRemoteSocketAddress());
+	}
+	
+	public void run() {
 		try {
-			Socket sock = new Socket(InetAddress.getByName(IP), port);
-			guiSetup();
-			gui.addText("Connected to "+sock.getRemoteSocketAddress());
 			OutputStream outToServer = sock.getOutputStream();
 			out = new DataOutputStream(outToServer);
 			InputStream inFromServer = sock.getInputStream();
@@ -38,7 +43,6 @@ public class ChatClient extends Thread {
 
 			//	         System.out.println("Server says " + in.readUTF());
 			gui.addText(in.readUTF());
-			sock.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

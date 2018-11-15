@@ -33,8 +33,6 @@ public class ChatServer extends Thread{
 			in = new DataInputStream(client.getInputStream());
 			gui.addText(in.readUTF());
 			out = new DataOutputStream(client.getOutputStream());
-			out.writeUTF("ping");
-			SSock.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
