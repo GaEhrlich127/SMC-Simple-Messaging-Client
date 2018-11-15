@@ -31,8 +31,9 @@ public class ChatServer extends Thread{
 		try {
 			Socket client=SSock.accept();
 			in = new DataInputStream(client.getInputStream());
-			gui.addText(in.readUTF());
 			out = new DataOutputStream(client.getOutputStream());
+			while(true)
+				gui.addText(in.readUTF());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,7 +58,7 @@ public class ChatServer extends Thread{
 		frame.setSize(835,660);
 		frame.setVisible(true);
 	}
-	
+
 	private static void addGUIButtons(String username) {//This will add the functionality to hitting enter and/or the button
 		gui.getMessageField().addActionListener(new ActionListener() {
 			@Override
@@ -90,5 +91,5 @@ public class ChatServer extends Thread{
 			}
 		});
 	}
-	
+
 }

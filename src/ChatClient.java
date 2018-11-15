@@ -40,9 +40,8 @@ public class ChatClient extends Thread {
 			out = new DataOutputStream(outToServer);
 			InputStream inFromServer = sock.getInputStream();
 			in = new DataInputStream(inFromServer);
-
-			//	         System.out.println("Server says " + in.readUTF());
-			gui.addText(in.readUTF());
+			while(true)
+				gui.addText(in.readUTF());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
