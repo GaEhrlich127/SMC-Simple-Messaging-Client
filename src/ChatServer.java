@@ -1,7 +1,4 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.time.LocalTime;
@@ -47,7 +44,7 @@ public class ChatServer extends Thread{
 
 	private static void guiSetup() {
 		String username=JOptionPane.showInputDialog("Please enter your username");
-		gui=new GUI(username);
+		gui=new GUI();
 		JFrame frame=new JFrame();
 
 		addGUIButtons(username);
