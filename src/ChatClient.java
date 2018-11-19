@@ -54,7 +54,7 @@ public class ChatClient extends Thread {
 		frame.getContentPane().add(gui);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setTitle("SMC Client: "+username);
-		frame.setSize(835,660);
+		frame.setSize(880,660);
 		frame.setVisible(true);
 	}
 	
@@ -73,7 +73,7 @@ public class ChatClient extends Thread {
 				}
 			}
 		});
-		gui.getSubmitButton().addMouseListener(new MouseAdapter() {
+		gui.getTextSubmit().addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {

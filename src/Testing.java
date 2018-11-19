@@ -1,51 +1,27 @@
+import java.awt.Graphics2D;
 import java.awt.event.*;
-import java.io.*;
-import java.net.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageProducer;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalTime;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
+public class Testing {
 
-/*
- * SMC: Simple Messaging Client
- * Written by Gabe Ehrlich
- */
-public class ChatServer extends Thread{
-
-	ServerSocket SSock;
 	static GUI gui;
-	static DataOutputStream out;
-	static DataInputStream in;
-
-	public ChatServer() throws IOException {
+	static JFrame frame;
+	
+	public static void main(String[] args) {
 		guiSetup();
-		SSock=new ServerSocket(3509);
-		SSock.setSoTimeout(10000);
-	}
 
-	public void run(){
-		try {
-			Socket client=SSock.accept();
-			in = new DataInputStream(client.getInputStream());
-			out = new DataOutputStream(client.getOutputStream());
-			while(true)
-				gui.addText(in.readUTF());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
-
-	public static void main(String[] args) throws IOException {
-		Thread cs=new ChatServer();
-		cs.run();
-	}
-
+	
 	private static void guiSetup() {
 		String username=JOptionPane.showInputDialog("Please enter your username");
 		gui=new GUI();
-		JFrame frame=new JFrame();
+		frame=new JFrame();
 
 		addGUIButtons(username);
 
@@ -63,27 +39,29 @@ public class ChatServer extends Thread{
 				gui.setMSG("\n["+LocalTime.now()+"] "+username+": "+gui.getMessageField().getText());
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
-				try {
-					out.writeUTF(gui.getMSG());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		});
 		gui.getTextSubmit().addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				//Submit pressed
 				gui.setMSG("\n["+LocalTime.now()+"] "+username+": "+gui.getMessageField().getText());
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
+			}
+		});
+		gui.getImageSubmit().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JFileChooser fc=new JFileChooser();
+				fc.showOpenDialog(gui);
+				File f=fc.getSelectedFile();
+				BufferedImage bi;
 				try {
-					out.writeUTF(gui.getMSG());
-				} catch (IOException err) {
-					// TODO Auto-generated catch block
-					err.printStackTrace();
+					bi=ImageIO.read(f);
+					gui.revalidate();
+				}catch(IOException err) {
+					err.getMessage();
 				}
 			}
 		});

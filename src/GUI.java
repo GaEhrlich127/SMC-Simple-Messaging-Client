@@ -16,42 +16,54 @@ public class GUI extends JPanel {
 	 * 1: submitButton (feat. mouseClicked)
 	 * 2: messageField (feat. actionPerformed)
 	 */
-	private JEditorPane mainDisplay;
+	private JTextArea mainDisplay;
 	private String msg;
 	private JTextField messageField;
-	private JButton submitButton;
+	private JButton textSubmit;
+	private JButton imageSubmit;
 	
 	public GUI() {
 		msg="";
 		setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(22, 13, 766, 499);
+		scrollPane.setBounds(22, 13, 816, 499);
 		add(scrollPane);
 		
-		mainDisplay = new JEditorPane();
+		mainDisplay = new JTextArea();
 		mainDisplay.setFont(new Font("Monospaced", Font.PLAIN, 18));
 		scrollPane.setViewportView(mainDisplay);
 		mainDisplay.setEditable(false);
 		
-		submitButton = new JButton("Submit");
+		textSubmit = new JButton("Submit");
 //This button gains it's functionality within ChatClient and ChatServer, in order to make it work with networking
-		submitButton.setBounds(649, 529, 139, 55);
-		add(submitButton);
+		textSubmit.setBounds(738, 553, 100, 31);
+		add(textSubmit);
 		
 		messageField = new JTextField();
 //The ability to send messages by pressing enter is given in ChatClient and ChatServer, in order to make it work with networking
 		
-		messageField.setBounds(22, 529, 615, 55);
+		messageField.setBounds(22, 529, 704, 55);
 		add(messageField);
 		messageField.setColumns(10);
 		
+		imageSubmit = new JButton("Image");
+		imageSubmit.setBounds(738, 525, 100, 25);
+		add(imageSubmit);
+		
 	}
-	public JButton getSubmitButton() {
-		return submitButton;
+	
+	public JButton getImageSubmit() {
+		return imageSubmit;
+	}
+	public JButton getTextSubmit() {
+		return textSubmit;
 	}
 	public JTextField getMessageField() {
 		return messageField;
+	}
+	public JTextArea getMainDisplay() {
+		return mainDisplay;
 	}
 	public void addText(String msg) {
 		mainDisplay.setText(mainDisplay.getText()+msg);
@@ -62,6 +74,4 @@ public class GUI extends JPanel {
 	public void setMSG(String str) {
 		msg=str;
 	}
-	
-	
 }
