@@ -1,9 +1,14 @@
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.time.LocalTime;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
@@ -13,7 +18,8 @@ import javax.swing.WindowConstants;
  */
 public class ChatServer extends Thread{
 
-	ServerSocket SSock;
+	static ServerSocket SSock;
+	static Socket client;
 	static GUI gui;
 	static DataOutputStream out;
 	static DataInputStream in;
@@ -26,11 +32,24 @@ public class ChatServer extends Thread{
 
 	public void run(){
 		try {
-			Socket client=SSock.accept();
+			client=SSock.accept();
 			in = new DataInputStream(client.getInputStream());
 			out = new DataOutputStream(client.getOutputStream());
-			while(true)
+			while(true) {
 				gui.addText(in.readUTF());
+				try {
+					BufferedImage bi=ImageIO.read(in);
+					bi.flush();
+						JFrame frame=new JFrame();
+						JLabel picLabel = new JLabel(new ImageIcon(bi));
+						frame.add(picLabel);
+						LocalTime time=LocalTime.now();
+						gui.addText("\n["+time+"] Image Recieved");
+						frame.setTitle("["+time+"] Image Recieved");
+						frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
+						frame.setVisible(true);
+				}catch(Exception e) {}
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,6 +103,39 @@ public class ChatServer extends Thread{
 				} catch (IOException err) {
 					// TODO Auto-generated catch block
 					err.printStackTrace();
+				}
+			}
+		});
+		gui.getImageSubmit().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JFileChooser fc=new JFileChooser();
+				fc.showOpenDialog(gui);
+				File f=fc.getSelectedFile();
+				BufferedImage bi;
+				try {
+					bi=ImageIO.read(f);
+					JFrame frame=new JFrame();
+					JLabel picLabel = new JLabel(new ImageIcon(bi));
+					frame.add(picLabel);
+					LocalTime time=LocalTime.now();
+					gui.setMSG("\n["+time+"] Image Sent");
+					gui.addText(gui.getMSG());
+					String extension=f.getAbsolutePath();
+					for(int i=extension.length()-1;i>0;i--) {
+						if(extension.charAt(i)=='\\') {
+								extension=extension.substring(i+1,extension.length());
+								break;
+						}
+					}
+					extension=extension.toUpperCase();
+					ImageIO.write(bi, extension, client.getOutputStream());
+					frame.setTitle("["+time+"] Image Sent");
+					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
+					frame.setVisible(true);
+					bi.flush();
+				}catch(IOException err) {
+					err.getMessage();
 				}
 			}
 		});
