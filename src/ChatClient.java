@@ -42,22 +42,16 @@ public class ChatClient extends Thread {
 
 	public void run() {
 		try {
+			OutputStream outToServer = sockText.getOutputStream();
+			InputStream inFromServer = sockText.getInputStream();
+			outText = new DataOutputStream(outToServer);
+			inText = new DataInputStream(inFromServer);
 
-			while(true) {
-				
-//MOVED FROM OUTSIDE OF LOOP
-				OutputStream outToServer = sockText.getOutputStream();
-				InputStream inFromServer = sockText.getInputStream();
-				outText = new DataOutputStream(outToServer);
-				inText = new DataInputStream(inFromServer);
-
-				OutputStream outToServer2 = sockImage.getOutputStream();
-				InputStream inFromServer2 = sockImage.getInputStream();
-				outImage = new DataOutputStream(outToServer2);
-				inImage = new DataInputStream(inFromServer2);
-//~~~~~~~~~~~~~~~~~~~~~~~~~~				
-				
-				
+			OutputStream outToServer2 = sockImage.getOutputStream();
+			InputStream inFromServer2 = sockImage.getInputStream();
+			outImage = new DataOutputStream(outToServer2);
+			inImage = new DataInputStream(inFromServer2);
+			while(true) {	
 				gui.addText(inText.readUTF());
 				try {
 					BufferedImage bi=ImageIO.read(inImage);
