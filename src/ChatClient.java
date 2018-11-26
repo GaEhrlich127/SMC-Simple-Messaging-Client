@@ -56,27 +56,16 @@ public class ChatClient extends Thread {
 				while(inText.available()>0)
 					gui.addText(inText.readUTF());
 				while(inImage.available()>0) {
-					System.out.println("Loop start");
 					try {
-						System.out.println("Trying");
 						BufferedImage bi=ImageIO.read(inImage);
-						System.out.println("Image read");
 						JFrame frame=new JFrame();
-						System.out.println("Frame made");
 						JLabel picLabel = new JLabel(new ImageIcon(bi));
-						System.out.println("JLabel made");
 						frame.add(picLabel);
-						System.out.println("Added");
 						LocalTime time=LocalTime.now();
-						System.out.println("Time");
 						gui.addText("\n["+time+"] Image Recieved");
-						System.out.println("GUI");
 						frame.setTitle("["+time+"] Image Recieved");
-						System.out.println("Title");
 						frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
-						System.out.println("Size");
 						frame.setVisible(true);
-						System.out.println("Visible");
 					}catch(Exception e) {}
 				}
 			}
@@ -140,8 +129,8 @@ public class ChatClient extends Thread {
 				try {
 					bi=ImageIO.read(f);
 					JFrame frame=new JFrame();
-					JLabel picLabel = new JLabel(new ImageIcon(bi));
-					frame.add(picLabel);
+					JLabel img = new JLabel(new ImageIcon(bi));
+					frame.add(img);
 					LocalTime time=LocalTime.now();
 					gui.setMSG("\n["+time+"] "+username+": Sent an Image");
 					outText.writeUTF(gui.getMSG());
@@ -154,7 +143,7 @@ public class ChatClient extends Thread {
 						}
 					}
 					extension=extension.toUpperCase();
-					ImageIO.write(bi, extension, sockImage.getOutputStream());
+					ImageIO.write(bi, extension, outImage);
 					outText.flush();
 					frame.setTitle("["+time+"] Image Sent");
 					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);

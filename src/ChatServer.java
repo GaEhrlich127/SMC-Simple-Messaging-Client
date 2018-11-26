@@ -38,6 +38,7 @@ public class ChatServer extends Thread{
 
 	public void run(){
 		try {
+			gui.addText("Connection from "+SSockText.getInetAddress());
 			sockText=SSockText.accept();
 			sockImage=SSockImage.accept();
 
@@ -56,7 +57,6 @@ public class ChatServer extends Thread{
 					gui.addText(inText.readUTF());
 				while(inImage.available()>0) {
 					System.out.println("Loop start");
-					try {
 						System.out.println("Trying");
 						BufferedImage bi=ImageIO.read(inImage);
 						System.out.println("Image read");
@@ -76,7 +76,6 @@ public class ChatServer extends Thread{
 						System.out.println("Size");
 						frame.setVisible(true);
 						System.out.println("Visible");
-					}catch(Exception e) {}
 				}
 			}
 		} catch (IOException e) {
@@ -142,8 +141,8 @@ public class ChatServer extends Thread{
 				try {
 					bi=ImageIO.read(f);
 					JFrame frame=new JFrame();
-					JLabel picLabel = new JLabel(new ImageIcon(bi));
-					frame.add(picLabel);
+					JLabel img = new JLabel(new ImageIcon(bi));
+					frame.add(img);
 					LocalTime time=LocalTime.now();
 					gui.setMSG("\n["+time+"] "+username+": Sent an Image");
 					outText.writeUTF(gui.getMSG());
@@ -156,7 +155,7 @@ public class ChatServer extends Thread{
 						}
 					}
 					extension=extension.toUpperCase();
-					ImageIO.write(bi, extension, sockImage.getOutputStream());
+					ImageIO.write(bi, extension, outImage);
 					frame.setTitle("["+time+"] Image Sent");	
 					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
 					frame.setVisible(true);
