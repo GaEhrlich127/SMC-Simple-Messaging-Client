@@ -18,40 +18,56 @@ import javax.swing.WindowConstants;
  */
 public class ChatServer extends Thread{
 
-	static ServerSocket SSock;
-	static Socket client;
+	static ServerSocket SSockText;
+	static ServerSocket SSockImage;
+	static Socket sockText;
+	static Socket sockImage;
 	static GUI gui;
-	static DataOutputStream out;
-	static DataInputStream in;
+	static DataOutputStream outText;
+	static DataInputStream inText;
+	static DataOutputStream outImage;
+	static DataInputStream inImage;
 
 	public ChatServer() throws IOException {
 		guiSetup();
-		SSock=new ServerSocket(3509);
-		SSock.setSoTimeout(10000);
+		SSockText=new ServerSocket(3509);
+		SSockImage=new ServerSocket(3510);
+		SSockText.setSoTimeout(10000);
+		SSockImage.setSoTimeout(10000);
 	}
 
 	public void run(){
 		try {
-			client=SSock.accept();
-			in = new DataInputStream(client.getInputStream());
-			out = new DataOutputStream(client.getOutputStream());
+			sockText=SSockText.accept();
+			sockImage=SSockImage.accept();
 			while(true) {
-				gui.addText(in.readUTF());
+				
+//MOVED FROM OUTSIDE OF LOOP
+				OutputStream outToServer = sockText.getOutputStream();
+				InputStream inFromServer = sockText.getInputStream();
+				outText = new DataOutputStream(outToServer);
+				inText = new DataInputStream(inFromServer);
+
+				OutputStream outToServer2 = sockImage.getOutputStream();
+				InputStream inFromServer2 = sockImage.getInputStream();
+				outImage = new DataOutputStream(outToServer2);
+				inImage = new DataInputStream(inFromServer2);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				gui.addText(inText.readUTF());
 				try {
-					BufferedImage bi=ImageIO.read(in);
-					bi.flush();
-						JFrame frame=new JFrame();
-						JLabel picLabel = new JLabel(new ImageIcon(bi));
-						frame.add(picLabel);
-						LocalTime time=LocalTime.now();
-						gui.addText("\n["+time+"] Image Recieved");
-						frame.setTitle("["+time+"] Image Recieved");
-						frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
-						frame.setVisible(true);
+					BufferedImage bi=ImageIO.read(inImage);
+					JFrame frame=new JFrame();
+					JLabel picLabel = new JLabel(new ImageIcon(bi));
+					frame.add(picLabel);
+					LocalTime time=LocalTime.now();
+					gui.addText("\n["+time+"] Image Recieved");
+					frame.setTitle("["+time+"] Image Recieved");
+					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
+					frame.setVisible(true);
 				}catch(Exception e) {}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -83,9 +99,8 @@ public class ChatServer extends Thread{
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
 				try {
-					out.writeUTF(gui.getMSG());
+					outText.writeUTF(gui.getMSG());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -99,9 +114,8 @@ public class ChatServer extends Thread{
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
 				try {
-					out.writeUTF(gui.getMSG());
+					outText.writeUTF(gui.getMSG());
 				} catch (IOException err) {
-					// TODO Auto-generated catch block
 					err.printStackTrace();
 				}
 			}
@@ -119,18 +133,19 @@ public class ChatServer extends Thread{
 					JLabel picLabel = new JLabel(new ImageIcon(bi));
 					frame.add(picLabel);
 					LocalTime time=LocalTime.now();
-					gui.setMSG("\n["+time+"] Image Sent");
+					gui.setMSG("\n["+time+"] "+username+": Sent an Image");
+					outText.writeUTF(gui.getMSG());
 					gui.addText(gui.getMSG());
 					String extension=f.getAbsolutePath();
 					for(int i=extension.length()-1;i>0;i--) {
 						if(extension.charAt(i)=='\\') {
-								extension=extension.substring(i+1,extension.length());
-								break;
+							extension=extension.substring(i+1,extension.length());
+							break;
 						}
 					}
 					extension=extension.toUpperCase();
-					ImageIO.write(bi, extension, client.getOutputStream());
-					frame.setTitle("["+time+"] Image Sent");
+					ImageIO.write(bi, extension, sockImage.getOutputStream());
+					frame.setTitle("["+time+"] Image Sent");	
 					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
 					frame.setVisible(true);
 					bi.flush();
@@ -140,5 +155,4 @@ public class ChatServer extends Thread{
 			}
 		});
 	}
-
 }

@@ -19,9 +19,12 @@ import javax.swing.WindowConstants;
 public class ChatClient extends Thread {
 
 	static GUI gui;
-	static DataOutputStream out;
-	static DataInputStream in;
-	static Socket sock;
+	static DataOutputStream outText;
+	static DataInputStream inText;
+	static DataOutputStream outImage;
+	static DataInputStream inImage;
+	static Socket sockText;
+	static Socket sockImage;
 
 	public static void main(String[] args) throws UnknownHostException, IOException{
 		ChatClient cc=new ChatClient();
@@ -31,22 +34,33 @@ public class ChatClient extends Thread {
 	public ChatClient() throws UnknownHostException, IOException {
 		String IP=JOptionPane.showInputDialog("Enter the IP address of the server you'd like to connect to");
 		int port=3509;
-		sock = new Socket(InetAddress.getByName(IP), port);
+		sockText = new Socket(InetAddress.getByName(IP), port);
+		sockImage = new Socket(InetAddress.getByName(IP), port+1);
 		guiSetup();
-		gui.addText("Connected to "+sock.getRemoteSocketAddress());
+		gui.addText("Connected to "+sockText.getRemoteSocketAddress());
 	}
 
 	public void run() {
 		try {
-			OutputStream outToServer = sock.getOutputStream();
-			out = new DataOutputStream(outToServer);
-			InputStream inFromServer = sock.getInputStream();
-			in = new DataInputStream(inFromServer);
+
 			while(true) {
-				gui.addText(in.readUTF());
+				
+//MOVED FROM OUTSIDE OF LOOP
+				OutputStream outToServer = sockText.getOutputStream();
+				InputStream inFromServer = sockText.getInputStream();
+				outText = new DataOutputStream(outToServer);
+				inText = new DataInputStream(inFromServer);
+
+				OutputStream outToServer2 = sockImage.getOutputStream();
+				InputStream inFromServer2 = sockImage.getInputStream();
+				outImage = new DataOutputStream(outToServer2);
+				inImage = new DataInputStream(inFromServer2);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~				
+				
+				
+				gui.addText(inText.readUTF());
 				try {
-					BufferedImage bi=ImageIO.read(in);
-					bi.flush();
+					BufferedImage bi=ImageIO.read(inImage);
 					JFrame frame=new JFrame();
 					JLabel picLabel = new JLabel(new ImageIcon(bi));
 					frame.add(picLabel);
@@ -84,7 +98,8 @@ public class ChatClient extends Thread {
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
 				try {
-					out.writeUTF(gui.getMSG());
+					outText.writeUTF(gui.getMSG());
+					outText.flush();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -99,7 +114,8 @@ public class ChatClient extends Thread {
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
 				try {
-					out.writeUTF(gui.getMSG());
+					outText.writeUTF(gui.getMSG());
+					outText.flush();
 				} catch (IOException err) {
 					err.printStackTrace();
 				}
@@ -118,7 +134,8 @@ public class ChatClient extends Thread {
 					JLabel picLabel = new JLabel(new ImageIcon(bi));
 					frame.add(picLabel);
 					LocalTime time=LocalTime.now();
-					gui.setMSG("\n["+time+"] Image Sent");
+					gui.setMSG("\n["+time+"] "+username+": Sent an Image");
+					outText.writeUTF(gui.getMSG());
 					gui.addText(gui.getMSG());
 					String extension=f.getAbsolutePath();
 					for(int i=extension.length()-1;i>0;i--) {
@@ -128,7 +145,8 @@ public class ChatClient extends Thread {
 						}
 					}
 					extension=extension.toUpperCase();
-					ImageIO.write(bi, extension, sock.getOutputStream());
+					ImageIO.write(bi, extension, sockImage.getOutputStream());
+					outText.flush();
 					frame.setTitle("["+time+"] Image Sent");
 					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
 					frame.setVisible(true);
@@ -139,6 +157,5 @@ public class ChatClient extends Thread {
 			}
 		});
 	}
-
 
 }
