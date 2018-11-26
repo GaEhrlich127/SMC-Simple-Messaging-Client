@@ -137,12 +137,11 @@ public class ChatClient extends Thread {
 					gui.addText(gui.getMSG());
 					String extension=f.getAbsolutePath();
 					for(int i=extension.length()-1;i>0;i--) {
-						if(extension.charAt(i)=='\\') {
+						if(extension.charAt(i)=='.') {
 							extension=extension.substring(i+1,extension.length());
 							break;
 						}
 					}
-					extension=extension.toUpperCase();
 					ImageIO.write(bi, extension, outImage);
 					outText.flush();
 					frame.setTitle("["+time+"] Image Sent");
