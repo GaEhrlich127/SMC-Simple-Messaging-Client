@@ -51,19 +51,34 @@ public class ChatClient extends Thread {
 			InputStream inFromServer2 = sockImage.getInputStream();
 			outImage = new DataOutputStream(outToServer2);
 			inImage = new DataInputStream(inFromServer2);
-			while(true) {	
-				gui.addText(inText.readUTF());
-				try {
-					BufferedImage bi=ImageIO.read(inImage);
-					JFrame frame=new JFrame();
-					JLabel picLabel = new JLabel(new ImageIcon(bi));
-					frame.add(picLabel);
-					LocalTime time=LocalTime.now();
-					gui.addText("\n["+time+"] Image Recieved");
-					frame.setTitle("["+time+"] Image Recieved");
-					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
-					frame.setVisible(true);
-				}catch(Exception e) {}
+			
+			while(true) {
+				while(inText.available()>0)
+					gui.addText(inText.readUTF());
+				while(inImage.available()>0) {
+					System.out.println("Loop start");
+					try {
+						System.out.println("Trying");
+						BufferedImage bi=ImageIO.read(inImage);
+						System.out.println("Image read");
+						JFrame frame=new JFrame();
+						System.out.println("Frame made");
+						JLabel picLabel = new JLabel(new ImageIcon(bi));
+						System.out.println("JLabel made");
+						frame.add(picLabel);
+						System.out.println("Added");
+						LocalTime time=LocalTime.now();
+						System.out.println("Time");
+						gui.addText("\n["+time+"] Image Recieved");
+						System.out.println("GUI");
+						frame.setTitle("["+time+"] Image Recieved");
+						System.out.println("Title");
+						frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
+						System.out.println("Size");
+						frame.setVisible(true);
+						System.out.println("Visible");
+					}catch(Exception e) {}
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
