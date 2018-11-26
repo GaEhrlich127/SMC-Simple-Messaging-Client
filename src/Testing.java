@@ -59,7 +59,24 @@ public class Testing {
 				BufferedImage bi;
 				try {
 					bi=ImageIO.read(f);
-					gui.revalidate();
+					JFrame frame=new JFrame();
+					JLabel picLabel = new JLabel(new ImageIcon(bi));
+					frame.add(picLabel);
+					LocalTime time=LocalTime.now();
+					gui.setMSG("\n["+time+"] IMAGE FROM "+username);
+					gui.addText(gui.getMSG());
+					String extension=f.getAbsolutePath();
+					for(int i=extension.length()-1;i>0;i--) {
+						if(extension.charAt(i)=='\\') {
+								extension=extension.substring(i+1,extension.length());
+								break;
+						}
+					}
+					extension=extension.toUpperCase();
+//					ImageIO.write(bi, extension, socket.getOutputStream());
+					frame.setTitle("["+time+"]");
+					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
+					frame.setVisible(true);
 				}catch(IOException err) {
 					err.getMessage();
 				}
