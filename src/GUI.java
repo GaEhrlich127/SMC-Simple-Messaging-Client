@@ -15,7 +15,9 @@ public class GUI extends JPanel {
 	 * 0: scrollPane
 	 * 1: submitButton (feat. mouseClicked)
 	 * 2: messageField (feat. actionPerformed)
+	 * 3: imageSubmit
 	 */
+	//All of these could probably just be protected, but I'm an OOP purist, so getters it is.
 	private JTextArea mainDisplay;
 	private String msg;
 	private JTextField messageField;
@@ -47,6 +49,7 @@ public class GUI extends JPanel {
 		add(messageField);
 		messageField.setColumns(10);
 		
+//You guessed it, functionality added within the client and server
 		imageSubmit = new JButton("Image");
 		imageSubmit.setBounds(738, 525, 100, 25);
 		add(imageSubmit);
