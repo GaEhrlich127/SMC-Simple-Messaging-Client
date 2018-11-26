@@ -5,12 +5,7 @@ import java.net.*;
 import java.time.LocalTime;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 /*
  * SMC: Simple Messaging Client
@@ -38,44 +33,37 @@ public class ChatServer extends Thread{
 
 	public void run(){
 		try {
-			gui.addText("Connection from "+SSockText.getInetAddress());
+			//Set everything up
 			sockText=SSockText.accept();
 			sockImage=SSockImage.accept();
-
+			gui.addText("Connection from "+SSockText.getInetAddress());
+			//Connection made
+			//Text in/out
 			OutputStream outToServer = sockText.getOutputStream();
 			InputStream inFromServer = sockText.getInputStream();
 			outText = new DataOutputStream(outToServer);
 			inText = new DataInputStream(inFromServer);
-
+			
+			//Image in/out
 			OutputStream outToServer2 = sockImage.getOutputStream();
 			InputStream inFromServer2 = sockImage.getInputStream();
 			outImage = new DataOutputStream(outToServer2);
 			inImage = new DataInputStream(inFromServer2);
 
 			while(true) {
-				while(inText.available()>0)
-					gui.addText(inText.readUTF());
-				while(inImage.available()>0) {
-					System.out.println("Loop start");
-						System.out.println("Trying");
-						BufferedImage bi=ImageIO.read(inImage);
-						System.out.println("Image read");
-						JFrame frame=new JFrame();
-						System.out.println("Frame made");
-						JLabel picLabel = new JLabel(new ImageIcon(bi));
-						System.out.println("JLabel made");
-						frame.add(picLabel);
-						System.out.println("Added");
+				while(inText.available()>0)								//When there's text data waiting
+					gui.addText(inText.readUTF());						//Display it
+				
+				while(inImage.available()>0) {							//When there's image data waiting
+						BufferedImage bi=ImageIO.read(inImage);			//Read the image
+						JFrame frame=new JFrame();						//Make a new JFrame
+						JLabel picLabel = new JLabel(new ImageIcon(bi));//Make the image compatible
+						frame.add(picLabel);							//Add it to the frame
 						LocalTime time=LocalTime.now();
-						System.out.println("Time");
 						gui.addText("\n["+time+"] Image Recieved");
-						System.out.println("GUI");
-						frame.setTitle("["+time+"] Image Recieved");
-						System.out.println("Title");
+						frame.setTitle("["+time+"] Image Recieved");	//Display that you've received the image
 						frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
-						System.out.println("Size");
-						frame.setVisible(true);
-						System.out.println("Visible");
+						frame.setVisible(true);							//Size the Frame, make it visible
 				}
 			}
 		} catch (IOException e) {
@@ -102,30 +90,30 @@ public class ChatServer extends Thread{
 		frame.setVisible(true);
 	}
 
-	private static void addGUIButtons(String username) {//This will add the functionality to hitting enter and/or the button
-		gui.getMessageField().addActionListener(new ActionListener() {
+	private static void addGUIButtons(String username) {//This will add the functionality for hitting buttons or enter
+		gui.getMessageField().addActionListener(new ActionListener() {//Enter Key
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				//Compose the message
 				gui.setMSG("\n["+LocalTime.now()+"] "+username+": "+gui.getMessageField().getText());
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
 				try {
-					outText.writeUTF(gui.getMSG());
+					outText.writeUTF(gui.getMSG());//Send it
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		gui.getTextSubmit().addMouseListener(new MouseAdapter() {
-
+		gui.getTextSubmit().addMouseListener(new MouseAdapter() {//Submit button pressed
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				//Submit pressed
+				//Compose the message
 				gui.setMSG("\n["+LocalTime.now()+"] "+username+": "+gui.getMessageField().getText());
 				gui.addText(gui.getMSG());
 				gui.getMessageField().setText("");
 				try {
-					outText.writeUTF(gui.getMSG());
+					outText.writeUTF(gui.getMSG());//Send it
 				} catch (IOException err) {
 					err.printStackTrace();
 				}
@@ -133,20 +121,27 @@ public class ChatServer extends Thread{
 		});
 		gui.getImageSubmit().addMouseListener(new MouseAdapter() {
 			@Override
+			//Image Submit
 			public void mouseClicked(MouseEvent e) {
+				//Choose the file
 				JFileChooser fc=new JFileChooser();
 				fc.showOpenDialog(gui);
 				File f=fc.getSelectedFile();
 				BufferedImage bi;
 				try {
+					//Make the file swing compatible
 					bi=ImageIO.read(f);
 					JFrame frame=new JFrame();
 					JLabel img = new JLabel(new ImageIcon(bi));
 					frame.add(img);
+					
+					//Send that you're sending an image
 					LocalTime time=LocalTime.now();
 					gui.setMSG("\n["+time+"] "+username+": Sent an Image");
 					outText.writeUTF(gui.getMSG());
 					gui.addText(gui.getMSG());
+					
+					//Determine the File Extension
 					String extension=f.getAbsolutePath();
 					for(int i=extension.length()-1;i>0;i--) {
 						if(extension.charAt(i)=='.') {
@@ -154,6 +149,8 @@ public class ChatServer extends Thread{
 							break;
 						}
 					}
+					
+					//Send the image, and open it
 					ImageIO.write(bi, extension, outImage);
 					frame.setTitle("["+time+"] Image Sent");	
 					frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
