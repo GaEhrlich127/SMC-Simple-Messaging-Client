@@ -59,8 +59,8 @@ public class ChatClient extends Thread {
 						JLabel picLabel = new JLabel(new ImageIcon(bi));//Make the image compatible
 						frame.add(picLabel);							//Add it to the frame
 						LocalTime time=LocalTime.now();
-						gui.addText("\n["+time+"] Image Recieved");
-						frame.setTitle("["+time+"] Image Recieved");	//Display that you've received the image
+						gui.addText("\n["+time+"] Image Received");
+						frame.setTitle("["+time+"] Image Received");	//Display that you've received the image
 						frame.setSize(bi.getWidth()+bi.getWidth()/10,bi.getHeight()+bi.getHeight()/10);
 						frame.setVisible(true);							//Size the Frame, make it visible
 				}
