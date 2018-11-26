@@ -36,8 +36,7 @@ public class ChatServer extends Thread{
 			//Set everything up
 			sockText=SSockText.accept();
 			sockImage=SSockImage.accept();
-			gui.addText("Connection from "+SSockText.getInetAddress());
-			//Connection made
+
 			//Text in/out
 			OutputStream outToServer = sockText.getOutputStream();
 			InputStream inFromServer = sockText.getInputStream();
